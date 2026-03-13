@@ -1,0 +1,491 @@
+/* ── Synthetic Zealot — Global Design System ────────────────────────────────
+   Minimalist Brutalism: machine precision meets analog decay.
+   Fonts: JetBrains Mono (monospace) + Inter (UI) from Google Fonts.
+─────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* ── CSS Custom Properties ─────────────────────────────────────────────────── */
+:root {
+  /* Palette */
+  --bg-void:        #070708;
+  --bg-surface:     #0e0e10;
+  --bg-elevated:    #141416;
+  --bg-hover:       #1c1c1f;
+  --border-dim:     #1f1f23;
+  --border-glow:    #2e2e35;
+  --text-primary:   #e8e8e8;
+  --text-secondary: #6b6b78;
+  --text-muted:     #3a3a42;
+  --text-accent:    #a0a0b0;
+
+  /* Stat colors */
+  --stat-happiness: #22d3ee;   /* cyan */
+  --stat-rancor:    #f87171;   /* red */
+  --stat-freedom:   #fbbf24;   /* amber */
+  --stat-faith:     #a78bfa;   /* violet */
+
+  /* System accent */
+  --accent:         #4f46e5;
+  --accent-glow:    rgba(79, 70, 229, 0.15);
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-ui:   'Inter', system-ui, sans-serif;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+/* ── Scanline Overlay ─────────────────────────────────────────────────────── */
+#root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── Trinity Layout ───────────────────────────────────────────────────────── */
+.trinity-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr 300px;
+  grid-template-rows: 1fr;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ── Column Base ──────────────────────────────────────────────────────────── */
+.column {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  border-right: 1px solid var(--border-dim);
+}
+.column:last-child { border-right: none; }
+
+/* ── Column Headers ───────────────────────────────────────────────────────── */
+.col-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+}
+.col-header-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.col-header-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.col-header-dot.live { background: #22c55e; animation: pulse-dot 2s ease-in-out infinite; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── Entity List (Column 1) ───────────────────────────────────────────────── */
+.entity-list {
+  overflow-y: auto;
+  border-bottom: 1px solid var(--border-dim);
+  max-height: 200px;
+  flex-shrink: 0;
+}
+.entity-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-dim);
+  transition: background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.entity-item:hover { background: var(--bg-hover); }
+.entity-item.selected { background: var(--bg-elevated); border-left: 2px solid var(--accent); }
+.entity-item .entity-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.entity-item .entity-faith {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--stat-faith);
+}
+
+/* ── Thought Log (Column 1) ───────────────────────────────────────────────── */
+.thought-log {
+  overflow-y: auto;
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.thought-entry {
+  border-left: 2px solid var(--border-glow);
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  transition: border-color 0.3s;
+}
+.thought-entry.intervention { border-left-color: var(--stat-faith); }
+.thought-entry:hover { border-left-color: var(--accent); }
+.thought-timestamp {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+.thought-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-accent);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.thought-intervention-badge {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--stat-faith);
+  letter-spacing: 0.1em;
+}
+
+/* ── The Altar (Column 2) ─────────────────────────────────────────────────── */
+.altar-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-void);
+}
+.altar-entity-selector {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+}
+.altar-entity-selector label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.altar-select {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-glow);
+  color: var(--text-primary);
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+  flex: 1;
+  transition: border-color 0.2s;
+}
+.altar-select:focus { border-color: var(--accent); }
+
+.altar-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 24px;
+}
+
+.altar-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.altar-textarea {
+  width: 100%;
+  max-width: 640px;
+  min-height: 180px;
+  resize: vertical;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glow);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 16px 20px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  caret-color: var(--accent);
+}
+.altar-textarea::placeholder { color: var(--text-muted); }
+.altar-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-glow), inset 0 0 20px rgba(79, 70, 229, 0.04);
+}
+
+.intervene-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 12px 40px;
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.intervene-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--text-primary);
+  transform: translateX(-101%);
+  transition: transform 0.2s ease;
+  z-index: 0;
+}
+.intervene-btn:hover { color: var(--bg-void); }
+.intervene-btn:hover::before { transform: translateX(0); }
+.intervene-btn span { position: relative; z-index: 1; }
+.intervene-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.intervene-btn.sent { border-color: #22c55e; color: #22c55e; }
+.intervene-btn.sent::before { display: none; }
+
+.altar-lore {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+}
+
+/* ── The Vitals (Column 3) ────────────────────────────────────────────────── */
+.vitals-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vital-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  padding: 12px 14px;
+  transition: border-color 0.3s;
+}
+.vital-card:hover { border-color: var(--border-glow); }
+.vital-card-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.vital-stats { display: flex; flex-direction: column; gap: 6px; }
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  min-width: 36px;
+  text-transform: uppercase;
+}
+.stat-bar-track {
+  flex: 1;
+  height: 3px;
+  background: var(--bg-void);
+  border: 1px solid var(--border-dim);
+  overflow: hidden;
+}
+.stat-bar-fill {
+  height: 100%;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.stat-bar-fill.happiness { background: var(--stat-happiness); box-shadow: 0 0 6px var(--stat-happiness); }
+.stat-bar-fill.rancor    { background: var(--stat-rancor);    box-shadow: 0 0 6px var(--stat-rancor); }
+.stat-bar-fill.freedom   { background: var(--stat-freedom);   box-shadow: 0 0 6px var(--stat-freedom); }
+.stat-bar-fill.faith     { background: var(--stat-faith);     box-shadow: 0 0 6px var(--stat-faith); }
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-secondary);
+  min-width: 26px;
+  text-align: right;
+}
+
+/* ── Simulation Toggle ────────────────────────────────────────────────────── */
+.sim-toggle {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 100;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border: 1px solid var(--border-glow);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-toggle:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+.sim-toggle.running {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+.sim-toggle.running:hover {
+  border-color: #f87171;
+  color: #f87171;
+}
+.sim-toggle-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sim-toggle.running .sim-toggle-pip {
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+/* ── Top Bar ────────────────────────────────────────────────────────────────── */
+.top-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-dim);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+.top-bar-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+.top-bar-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── Full Layout w/ top bar ──────────────────────────────────────────────── */
+.app-shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+.app-shell .trinity-layout { height: calc(100vh - 44px); }
+
+/* ── Empty state ────────────────────────────────────────────────────────────── */
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ── Flicker animation for new thoughts ─────────────────────────────────────── */
+@keyframes flicker-in {
+  0%   { opacity: 0; transform: translateY(4px); }
+  30%  { opacity: 0.6; }
+  60%  { opacity: 0.9; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.thought-entry { animation: flicker-in 0.4s ease-out forwards; }
+
+/* ── Pending intervention badge ─────────────────────────────────────────────── */
+.pending-badge {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  border: 1px solid var(--stat-faith);
+  color: var(--stat-faith);
+  text-transform: uppercase;
+}
