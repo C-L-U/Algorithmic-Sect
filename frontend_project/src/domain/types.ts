@@ -4,6 +4,7 @@
  * No adapter-specific types here — purely domain contracts.
  */
 
+//stats of characters
 export interface IStats {
     happiness: number;  // 0–100
     rancor: number;     // 0–100
