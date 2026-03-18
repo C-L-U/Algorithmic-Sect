@@ -14,7 +14,7 @@ import type {
     IWSMessage,
 } from '../domain/types';
 import { API_BASE_URL, WS_URL } from '../constants';
-
+//
 class ApiAdapter implements IApiPort {
     private async request<T>(path: string, options?: RequestInit): Promise<T> {
         const res = await fetch(`${API_BASE_URL}${path}`, {

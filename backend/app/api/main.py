@@ -4,7 +4,6 @@ Wires all dependencies via constructor injection (Dependency Injection).
 No domain or business logic here — only composition root.
 """
 from __future__ import annotations
-
 import logging
 import os
 import sys
