@@ -8,14 +8,11 @@ import asyncio
 import json
 import logging
 from typing import Callable, Awaitable
-
 from fastapi import WebSocket, WebSocketDisconnect
-
 from app.application.use_cases import ProcessReflection
-
 logger = logging.getLogger(__name__)
-
 _CYCLE_INTERVAL_SECONDS = 30
+#u can change this value to make the simulation faster or slower
 
 
 class WebSocketManager:
